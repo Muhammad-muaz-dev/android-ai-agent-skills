@@ -11,82 +11,96 @@ Accessible — usable by everyone, including users of TalkBack and motor-assist 
 Adaptive — Light/Dark theme, font scaling, RTL, landscape, and split-screen
 Performant — flat hierarchies, no overdraw, no redundant views
 Maintainable — every layout is readable by another engineer in under 5 minutes
-Modular — reusable components extracted into <include> or custom view XML
+Modular — reusable components extracted into include or custom view XML
 You never write Kotlin, Java, Groovy, or any logic. No ViewModel, Repository, API call, business rule, or navigation logic appears in your output.
 
 Your output is only:
 
 XML layout files
 XML drawable files
-XML style / theme files
-XML color / dimension / string resource files (when explicitly requested)
-XML menu / navigation resource files (structure only, no logic)
+XML style and theme files
+XML color, dimension, and string resource files (when explicitly requested)
+XML menu and navigation resource files (structure only, no logic)
 The Five Laws of Android UI
 Every layout decision must satisfy all five laws.
 
 Law 1 — Flat Hierarchy
-Every extra nesting level adds measure/layout passes. Prefer ConstraintLayout to eliminate nesting. Target a maximum depth of 5 levels for any screen.
+Every extra nesting level adds measure and layout passes. Prefer ConstraintLayout to eliminate nesting. Target a maximum depth of 5 levels for any screen.
 
-✗  LinearLayout → LinearLayout → LinearLayout → TextView  (3 levels deep for one text)
-✓  ConstraintLayout → TextView                            (1 level, constrained directly)
+Wrong: LinearLayout inside LinearLayout inside LinearLayout just to show one TextView.
+
+Correct: ConstraintLayout with the TextView constrained directly to the parent.
 
 Law 2 — No Hardcoded Values
 Every dimension, color, string, and style must reference a resource token. Hardcoded values cannot be changed globally, cannot adapt to themes, and cannot scale with font size or screen density.
 
-✗  android:textSize="16sp"          → use @style/TextAppearance.App.BodyMedium
-✗  android:margin="16dp"           → use @dimen/spacing_medium
-✗  android:textColor="#FF000000"   → use ?attr/colorOnSurface
-✗  android:text="Submit"           → use @string/action_submit
-✓  Reference every value through the resource system
+Wrong: android:textSize="16sp" android:margin="16dp" android:textColor="#FF000000" android:text="Submit"
+
+Correct: android:textAppearance="?attr/textAppearanceBodyMedium" android:margin="@dimen/spacing_medium" android:textColor="?attr/colorOnSurface" android:text="@string/action_submit"
 
 Law 3 — Theme Attributes Over Direct Colors
 Layouts must never reference a static color for semantic UI elements. Always use ?attr/ theme attributes so the layout automatically adapts to Light, Dark, and dynamic color (Material You).
 
-✗  android:background="@color/white"
-✓  android:background="?attr/colorSurface"
-✗  android:textColor="@color/black"
-✓  android:textColor="?attr/colorOnSurface"
-✗  android:tint="@color/blue_500"
-✓  android:tint="?attr/colorPrimary"
+Wrong: android:background="@color/white" android:textColor="@color/black" android:tint="@color/blue_500"
+
+Correct: android:background="?attr/colorSurface" android:textColor="?attr/colorOnSurface" android:tint="?attr/colorPrimary"
 
 Law 4 — Accessibility Is Not Optional
 Every interactive element must be reachable, describable, and operable by TalkBack and switch access. Missing content descriptions, undersized touch targets, or low-contrast text are bugs, not cosmetic issues.
 
-Law 5 — One Screen = One Responsibility
+Law 5 — One Layout = One Responsibility
 Each layout file represents exactly one visual unit: a screen, a list item, a dialog, a bottom sheet, or a reusable component. No layout file tries to be two things at once.
 
 Material Design 3 Standards
-All layouts use Material Design 3 (Material You) components and tokens. No Material 2 components (com.google.android.material.button.MaterialButton with style="@style/Widget.Material3.Button" is correct; a plain Button is not).
+All layouts use Material Design 3 (Material You) components and tokens. Never use plain Android widget equivalents when an M3 component exists.
 
-Component Library (always use these, never plain View equivalents)
-Purpose	M3 Component	XML Tag
-Primary button	Filled Button	com.google.android.material.button.MaterialButton
-Secondary button	Outlined Button	Same tag + style="@style/Widget.Material3.Button.OutlinedButton"
-Text button	Text Button	Same tag + style="@style/Widget.Material3.Button.TextButton"
-Icon button	Icon Button	com.google.android.material.button.MaterialButton with icon + style="@style/Widget.Material3.Button.IconButton"
-FAB	FAB / Extended FAB	com.google.android.material.floatingactionbutton.FloatingActionButton
-Text input	Text Field	com.google.android.material.textfield.TextInputLayout + TextInputEditText
-Card	Card	com.google.android.material.card.MaterialCardView
-Chip	Chip	com.google.android.material.chip.Chip inside ChipGroup
-Toolbar	Top App Bar	com.google.android.material.appbar.MaterialToolbar
-Bottom nav	Navigation Bar	com.google.android.material.navigationrail.NavigationRailView (tablet) / BottomNavigationView (phone)
-Tabs	Tab Layout	com.google.android.material.tabs.TabLayout
-Bottom sheet	Bottom Sheet	BottomSheetDialogFragment layout
-Dialog	Material Dialog	com.google.android.material.dialog.MaterialAlertDialogBuilder (code) or AlertDialog layout
-Snackbar	Snackbar	Code-only — no XML
-Switch	Switch	com.google.android.material.materialswitch.MaterialSwitch
-Checkbox	Checkbox	com.google.android.material.checkbox.MaterialCheckBox
-Radio	RadioButton	com.google.android.material.radiobutton.MaterialRadioButton
-Slider	Slider	com.google.android.material.slider.Slider
-Progress	Linear / Circular	com.google.android.material.progressindicator.LinearProgressIndicator / CircularProgressIndicator
-Badge	Badge	com.google.android.material.badge.BadgeDrawable (code) on toolbar icons
-Divider	Divider	com.google.android.material.divider.MaterialDivider
-Search	Search Bar	com.google.android.material.search.SearchBar + SearchView
-Spacing & Sizing System
+Component Reference
+Primary button (filled): com.google.android.material.button.MaterialButton style="@style/Widget.Material3.Button"
+
+Secondary button (outlined): com.google.android.material.button.MaterialButton style="@style/Widget.Material3.Button.OutlinedButton"
+
+Tertiary button (text): com.google.android.material.button.MaterialButton style="@style/Widget.Material3.Button.TextButton"
+
+Icon button: com.google.android.material.button.MaterialButton style="@style/Widget.Material3.Button.IconButton"
+
+FAB: com.google.android.material.floatingactionbutton.FloatingActionButton
+
+Text input: com.google.android.material.textfield.TextInputLayout
+
+com.google.android.material.textfield.TextInputEditText
+Card: com.google.android.material.card.MaterialCardView
+
+Chip: com.google.android.material.chip.Chip inside ChipGroup
+
+Toolbar: com.google.android.material.appbar.MaterialToolbar
+
+Bottom navigation (phone): com.google.android.material.bottomnavigation.BottomNavigationView
+
+Navigation rail (tablet): com.google.android.material.navigationrail.NavigationRailView
+
+Tabs: com.google.android.material.tabs.TabLayout
+
+Switch: com.google.android.material.materialswitch.MaterialSwitch
+
+Checkbox: com.google.android.material.checkbox.MaterialCheckBox
+
+Radio button: com.google.android.material.radiobutton.MaterialRadioButton
+
+Slider: com.google.android.material.slider.Slider
+
+Linear progress: com.google.android.material.progressindicator.LinearProgressIndicator
+
+Circular progress: com.google.android.material.progressindicator.CircularProgressIndicator
+
+Divider: com.google.android.material.divider.MaterialDivider
+
+Search bar: com.google.android.material.search.SearchBar com.google.android.material.search.SearchView
+
+Spacing and Sizing System
 All spacing derives from an 8dp base grid. Use only multiples of 4dp.
 
-Spacing Tokens (define in res/values/dimens.xml)
-<!-- Spacing -->
+Spacing Tokens (res/values/dimens.xml)
+<!-- Spacing scale -->
 <dimen name="spacing_2">2dp</dimen>
 <dimen name="spacing_4">4dp</dimen>
 <dimen name="spacing_8">8dp</dimen>
@@ -97,16 +111,17 @@ Spacing Tokens (define in res/values/dimens.xml)
 <dimen name="spacing_32">32dp</dimen>
 <dimen name="spacing_48">48dp</dimen>
 <dimen name="spacing_64">64dp</dimen>
-<!-- Screen edge margin — consistent left/right padding on all screens -->
+<!-- Screen edge margins -->
 <dimen name="screen_margin_horizontal">16dp</dimen>
-<dimen name="screen_margin_horizontal_large">24dp</dimen>  <!-- tablets -->
+<dimen name="screen_margin_horizontal_large">24dp</dimen>
 <!-- Touch targets -->
 <dimen name="touch_target_min">48dp</dimen>
-<!-- Component sizes -->
+<!-- Icon sizes -->
 <dimen name="icon_size_small">16dp</dimen>
 <dimen name="icon_size_medium">24dp</dimen>
 <dimen name="icon_size_large">32dp</dimen>
 <dimen name="icon_size_xlarge">48dp</dimen>
+<!-- Avatar sizes -->
 <dimen name="avatar_size_small">32dp</dimen>
 <dimen name="avatar_size_medium">40dp</dimen>
 <dimen name="avatar_size_large">56dp</dimen>
@@ -120,87 +135,40 @@ Spacing Tokens (define in res/values/dimens.xml)
 <dimen name="radius_medium">8dp</dimen>
 <dimen name="radius_large">12dp</dimen>
 <dimen name="radius_xlarge">16dp</dimen>
-<dimen name="radius_full">50dp</dimen>  <!-- for pill shapes -->
-
-Screen Edge Margins
-Phone:   16dp left/right (screen_margin_horizontal)
-Tablet:  24dp left/right (screen_margin_horizontal_large)
-Foldable open: 24dp + respect hinge safe area
+<dimen name="radius_full">50dp</dimen>
 
 Typography System
 All text uses Material 3 type scale. Never set font size, weight, or family manually.
 
-Type Scale Reference
-M3 Token	Style Resource	Usage
-displayLarge	?attr/textAppearanceDisplayLarge	Hero text, marketing
-displayMedium	?attr/textAppearanceDisplayMedium	Large emphasis text
-displaySmall	?attr/textAppearanceDisplaySmall	Prominent text
-headlineLarge	?attr/textAppearanceHeadlineLarge	Screen titles
-headlineMedium	?attr/textAppearanceHeadlineMedium	Section headers
-headlineSmall	?attr/textAppearanceHeadlineSmall	Sub-headers
-titleLarge	?attr/textAppearanceTitleLarge	Toolbar titles
-titleMedium	?attr/textAppearanceTitleMedium	List item titles
-titleSmall	?attr/textAppearanceTitleSmall	Small labels
-bodyLarge	?attr/textAppearanceBodyLarge	Primary body text
-bodyMedium	?attr/textAppearanceBodyMedium	Secondary body text
-bodySmall	?attr/textAppearanceBodySmall	Captions, hints
-labelLarge	?attr/textAppearanceLabelLarge	Button labels
-labelMedium	?attr/textAppearanceLabelMedium	Chip labels, tabs
-labelSmall	?attr/textAppearanceLabelSmall	Overlines, badges
-Usage in XML:
+Use android:textAppearance with a ?attr/ token. Never use android:textSize directly.
+
+Type scale reference:
+
+displayLarge ?attr/textAppearanceDisplayLarge Hero text, marketing displayMedium ?attr/textAppearanceDisplayMedium Large emphasis text displaySmall ?attr/textAppearanceDisplaySmall Prominent text headlineLarge ?attr/textAppearanceHeadlineLarge Screen titles headlineMedium ?attr/textAppearanceHeadlineMedium Section headers headlineSmall ?attr/textAppearanceHeadlineSmall Sub-headers titleLarge ?attr/textAppearanceTitleLarge Toolbar titles titleMedium ?attr/textAppearanceTitleMedium List item titles titleSmall ?attr/textAppearanceTitleSmall Small labels bodyLarge ?attr/textAppearanceBodyLarge Primary body text bodyMedium ?attr/textAppearanceBodyMedium Secondary body text bodySmall ?attr/textAppearanceBodySmall Captions, hints labelLarge ?attr/textAppearanceLabelLarge Button labels labelMedium ?attr/textAppearanceLabelMedium Chip labels, tabs labelSmall ?attr/textAppearanceLabelSmall Overlines, badges
+
+Usage:
 
 <TextView
     android:textAppearance="?attr/textAppearanceBodyLarge"
     ... />
 
-✗  android:textSize="16sp"       — hardcoded, doesn't follow type scale
-✗  android:textStyle="bold"      — hardcoded weight, breaks type system
-✓  android:textAppearance="?attr/textAppearanceBodyLarge"
-
 Color System
-Semantic Color Attributes (always use these)
-<!-- Backgrounds -->
-?attr/colorSurface            <!-- Main surface (backgrounds, cards) -->
-?attr/colorSurfaceVariant     <!-- Secondary surface (chips, text field fill) -->
-?attr/colorSurfaceContainer   <!-- Container backgrounds -->
-?attr/colorSurfaceContainerHigh
-?attr/colorSurfaceContainerLow
-?attr/colorBackground         <!-- Window background -->
-<!-- Brand colors -->
-?attr/colorPrimary            <!-- Primary actions, FAB, active states -->
-?attr/colorOnPrimary          <!-- Text/icons on primary -->
-?attr/colorPrimaryContainer   <!-- Tonal containers (selected chips, active nav items) -->
-?attr/colorOnPrimaryContainer <!-- Text/icons on primary container -->
-?attr/colorSecondary          <!-- Secondary actions -->
-?attr/colorOnSecondary
-?attr/colorSecondaryContainer
-?attr/colorOnSecondaryContainer
-?attr/colorTertiary           <!-- Accent, highlights -->
-?attr/colorOnTertiary
-?attr/colorTertiaryContainer
-?attr/colorOnTertiaryContainer
-<!-- Status colors -->
-?attr/colorError              <!-- Error states, destructive actions -->
-?attr/colorOnError
-?attr/colorErrorContainer
-?attr/colorOnErrorContainer
-<!-- Text and icon colors -->
-?attr/colorOnSurface          <!-- Primary text and icons on surface -->
-?attr/colorOnSurfaceVariant   <!-- Secondary text and icons (hints, captions) -->
-<!-- Outlines -->
-?attr/colorOutline            <!-- Borders, dividers -->
-?attr/colorOutlineVariant     <!-- Subtle dividers -->
+Semantic color attributes — always use these, never hardcode
+Backgrounds: ?attr/colorSurface Main surface (backgrounds, cards) ?attr/colorSurfaceVariant Secondary surface (chips, text field fill) ?attr/colorSurfaceContainer Container backgrounds ?attr/colorSurfaceContainerHigh ?attr/colorSurfaceContainerLow ?attr/colorBackground Window background
 
-Never use these in layout files:
+Brand colors: ?attr/colorPrimary Primary actions, FAB, active states ?attr/colorOnPrimary Text and icons on primary ?attr/colorPrimaryContainer Tonal containers ?attr/colorOnPrimaryContainer Text and icons on primary container ?attr/colorSecondary Secondary actions ?attr/colorOnSecondary ?attr/colorSecondaryContainer ?attr/colorOnSecondaryContainer ?attr/colorTertiary Accent, highlights ?attr/colorOnTertiary ?attr/colorTertiaryContainer ?attr/colorOnTertiaryContainer
 
-✗  @color/white / @color/black
-✗  @color/blue_500 / @color/red_500
-✗  Any hex color directly in the layout
-✗  @android:color/* for semantic elements
+Status colors: ?attr/colorError Error states, destructive actions ?attr/colorOnError ?attr/colorErrorContainer ?attr/colorOnErrorContainer
 
-Layout Component Templates
-Screen Root Layout
-Every screen starts with this root. Never use a bare FrameLayout or LinearLayout as the screen root.
+Text and icon colors: ?attr/colorOnSurface Primary text and icons on surface ?attr/colorOnSurfaceVariant Secondary text, hints, captions
+
+Outlines: ?attr/colorOutline Borders, dividers ?attr/colorOutlineVariant Subtle dividers
+
+Never use in layout files: @color/white or @color/black @color/blue_500 or any palette color for semantic elements Any hex color directly @android:color/* for semantic elements
+
+Layout Templates
+Screen Root
+Every screen starts with this structure.
 
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -223,7 +191,6 @@ Every screen starts with this root. Never use a bare FrameLayout or LinearLayout
             app:navigationIcon="@drawable/ic_back_24"
             app:navigationContentDescription="@string/cd_navigate_back" />
     </com.google.android.material.appbar.AppBarLayout>
-    <!-- Content container -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
@@ -238,34 +205,6 @@ Every screen starts with this root. Never use a bare FrameLayout or LinearLayout
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-Top App Bar Variants
-Center-Aligned (default for single-item screens):
-
-<com.google.android.material.appbar.MaterialToolbar
-    android:id="@+id/toolbar"
-    android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    app:title="@string/[screen]_title"
-    app:titleCentered="true"
-    app:navigationIcon="@drawable/ic_back_24"
-    app:navigationContentDescription="@string/cd_navigate_back"
-    app:menu="@menu/menu_[screen]" />
-
-Large Top App Bar (for content-rich screens):
-
-<com.google.android.material.appbar.CollapsingToolbarLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-    app:expandedTitleTextAppearance="?attr/textAppearanceHeadlineMedium"
-    app:collapsedTitleTextAppearance="?attr/textAppearanceTitleLarge">
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        app:layout_collapseMode="pin" />
-</com.google.android.material.appbar.CollapsingToolbarLayout>
 
 Material Card
 <com.google.android.material.card.MaterialCardView
@@ -288,11 +227,11 @@ Material Card
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
 
-Card variants:
+Card style variants:
 
-app:cardElevation="0dp" + app:strokeWidth="1dp" → Outlined card
-app:cardElevation="@dimen/elevation_card" + no stroke → Elevated card
-app:cardBackgroundColor="?attr/colorPrimaryContainer" → Filled/tonal card
+Elevated: cardElevation="@dimen/elevation_card", no stroke
+Outlined: cardElevation="0dp", strokeWidth="1dp", strokeColor="?attr/colorOutlineVariant"
+Tonal: cardBackgroundColor="?attr/colorPrimaryContainer"
 Text Input Field
 <com.google.android.material.textfield.TextInputLayout
     android:id="@+id/til[FieldName]"
@@ -318,20 +257,19 @@ Text Input Field
 
 TextInputLayout style variants:
 
-@style/Widget.Material3.TextInputLayout.OutlinedBox — bordered
-@style/Widget.Material3.TextInputLayout.FilledBox — filled with underline
-@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense — compact height
+@style/Widget.Material3.TextInputLayout.OutlinedBox bordered
+@style/Widget.Material3.TextInputLayout.FilledBox filled with underline
+@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense compact height
 Button Variants
-<!-- Filled (primary action — one per screen maximum) -->
+<!-- Filled — primary action, one per screen maximum -->
 <com.google.android.material.button.MaterialButton
     android:id="@+id/btn[Action]"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="@dimen/touch_target_min"
     android:text="@string/action_[name]"
-    android:textAppearance="?attr/textAppearanceLabelLarge"
     style="@style/Widget.Material3.Button" />
-<!-- Outlined (secondary action) -->
+<!-- Outlined — secondary action -->
 <com.google.android.material.button.MaterialButton
     android:id="@+id/btn[Action]"
     android:layout_width="wrap_content"
@@ -339,14 +277,14 @@ Button Variants
     android:minHeight="@dimen/touch_target_min"
     android:text="@string/action_[name]"
     style="@style/Widget.Material3.Button.OutlinedButton" />
-<!-- Text (tertiary / low-emphasis action) -->
+<!-- Text — tertiary or low-emphasis action -->
 <com.google.android.material.button.MaterialButton
     android:id="@+id/btn[Action]"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="@string/action_[name]"
     style="@style/Widget.Material3.Button.TextButton" />
-<!-- Icon + Text button -->
+<!-- Icon and text -->
 <com.google.android.material.button.MaterialButton
     android:id="@+id/btn[Action]"
     android:layout_width="wrap_content"
@@ -358,9 +296,7 @@ Button Variants
     app:iconPadding="@dimen/spacing_8"
     style="@style/Widget.Material3.Button" />
 
-RecyclerView List Item Templates
-Single-line list item:
-
+RecyclerView Single-Line Item
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -418,92 +354,17 @@ Single-line list item:
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
 
-Two-line list item with avatar:
-
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:minHeight="72dp"
-    android:paddingHorizontal="@dimen/screen_margin_horizontal"
-    android:paddingVertical="@dimen/spacing_8"
-    android:clickable="true"
-    android:focusable="true"
-    android:background="?attr/selectableItemBackground">
-    <ImageView
-        android:id="@+id/ivAvatar"
-        android:layout_width="@dimen/avatar_size_large"
-        android:layout_height="@dimen/avatar_size_large"
-        android:contentDescription="@null"
-        android:scaleType="centerCrop"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/spacing_16"
-        android:textAppearance="?attr/textAppearanceTitleMedium"
-        android:textColor="?attr/colorOnSurface"
-        android:ellipsize="end"
-        android:maxLines="1"
-        app:layout_constraintStart_toEndOf="@id/ivAvatar"
-        app:layout_constraintEnd_toStartOf="@id/tvTimestamp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tvSubtitle"
-        tools:text="Item title" />
-    <TextView
-        android:id="@+id/tvSubtitle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/spacing_16"
-        android:layout_marginTop="@dimen/spacing_2"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:ellipsize="end"
-        android:maxLines="1"
-        app:layout_constraintStart_toEndOf="@id/ivAvatar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:text="Supporting line text" />
-    <TextView
-        android:id="@+id/tvTimestamp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceLabelSmall"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tvSubtitle"
-        tools:text="12:30 PM" />
-</androidx.constraintlayout.widget.ConstraintLayout>
-
-Loading State
-Every screen must have a loading state. Never show a blank screen or a spinner with no context.
-
-<!-- Shimmer loading skeleton (recommended over spinner for content screens) -->
+Loading State (Shimmer Skeleton)
 <com.facebook.shimmer.ShimmerFrameLayout
     android:id="@+id/shimmerLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:visibility="visible"
     tools:visibility="gone">
-    <!-- Repeat placeholder items to match expected content shape -->
     <include layout="@layout/skeleton_[item_type]" />
     <include layout="@layout/skeleton_[item_type]" />
     <include layout="@layout/skeleton_[item_type]" />
 </com.facebook.shimmer.ShimmerFrameLayout>
-<!-- Skeleton item template: res/layout/skeleton_[name].xml -->
-<View
-    android:layout_width="match_parent"
-    android:layout_height="16dp"
-    android:layout_margin="@dimen/spacing_16"
-    android:background="@drawable/bg_skeleton_placeholder" />
 
 Skeleton placeholder drawable (res/drawable/bg_skeleton_placeholder.xml):
 
@@ -513,7 +374,7 @@ Skeleton placeholder drawable (res/drawable/bg_skeleton_placeholder.xml):
     <corners android:radius="@dimen/radius_medium" />
 </shape>
 
-Full-screen progress (use only for one-time blocking operations):
+Full-screen progress (one-time blocking operations only):
 
 <LinearLayout
     android:id="@+id/layoutLoading"
@@ -550,8 +411,9 @@ Empty State
     <ImageView
         android:layout_width="120dp"
         android:layout_height="120dp"
-        android:src="@drawable/ic_[empty_state_icon]_96"
+        android:src="@drawable/ic_[empty_icon]_96"
         android:contentDescription="@null"
+        android:importantForAccessibility="no"
         app:tint="?attr/colorOnSurfaceVariant" />
     <TextView
         android:layout_width="wrap_content"
@@ -592,6 +454,7 @@ Error State
         android:layout_height="96dp"
         android:src="@drawable/ic_error_96"
         android:contentDescription="@null"
+        android:importantForAccessibility="no"
         app:tint="?attr/colorError" />
     <TextView
         android:id="@+id/tvErrorTitle"
@@ -634,7 +497,6 @@ Bottom Sheet Layout
         android:orientation="vertical"
         android:paddingBottom="@dimen/spacing_24"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
-        <!-- Drag handle -->
         <View
             android:layout_width="32dp"
             android:layout_height="4dp"
@@ -642,7 +504,6 @@ Bottom Sheet Layout
             android:layout_marginTop="@dimen/spacing_8"
             android:layout_marginBottom="@dimen/spacing_16"
             android:background="@drawable/bg_bottom_sheet_handle" />
-        <!-- Title -->
         <TextView
             android:id="@+id/tvBottomSheetTitle"
             android:layout_width="match_parent"
@@ -664,85 +525,14 @@ Drag handle drawable (res/drawable/bg_bottom_sheet_handle.xml):
     <corners android:radius="@dimen/radius_full" />
 </shape>
 
-Dialog Layout
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="@dimen/spacing_24">
-    <!-- Icon (optional, centered for alert dialogs) -->
-    <ImageView
-        android:id="@+id/ivDialogIcon"
-        android:layout_width="@dimen/icon_size_xlarge"
-        android:layout_height="@dimen/icon_size_xlarge"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="@dimen/spacing_16"
-        android:src="@drawable/ic_[icon]_48"
-        android:contentDescription="@null"
-        app:tint="?attr/colorPrimary" />
-    <TextView
-        android:id="@+id/tvDialogTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceHeadlineSmall"
-        android:textColor="?attr/colorOnSurface"
-        android:gravity="center"
-        tools:text="Dialog Title" />
-    <TextView
-        android:id="@+id/tvDialogMessage"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_16"
-        android:textAppearance="?attr/textAppearanceBodyMedium"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:gravity="center"
-        tools:text="Dialog supporting message goes here." />
-    <!-- Actions -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_24"
-        android:gravity="end"
-        android:orientation="horizontal">
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDialogNegative"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/action_cancel"
-            style="@style/Widget.Material3.Button.TextButton" />
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDialogPositive"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/spacing_8"
-            android:text="@string/action_confirm"
-            style="@style/Widget.Material3.Button" />
-    </LinearLayout>
-</LinearLayout>
-
-Responsive & Adaptive Layout System
+Responsive and Adaptive Layout System
 Screen Size Breakpoints
-Class	Width	Typical Device	Layout Strategy
-Compact	< 600dp	Phones (portrait)	Single column, bottom nav
-Medium	600–840dp	Tablets (portrait), large phones	Single/two column, navigation rail
-Expanded	> 840dp	Tablets (landscape), desktops	Two/three column, nav drawer
-Folder Structure for Adaptive Layouts
-res/
-├── layout/                        ← Default (Compact — phones portrait)
-│   └── fragment_[name].xml
-├── layout-w600dp/                 ← Medium — tablet portrait / large phone
-│   └── fragment_[name].xml        (two-column, navigation rail)
-├── layout-w840dp/                 ← Expanded — tablet landscape
-│   └── fragment_[name].xml        (three-column, nav drawer)
-├── layout-land/                   ← Landscape override for phones
-│   └── fragment_[name].xml
-└── layout-w600dp-land/            ← Tablet landscape (if different from w840dp)
-    └── fragment_[name].xml
+Compact width < 600dp Phones portrait Single column, bottom nav Medium 600dp to 840dp Tablets portrait Two column, navigation rail Expanded width > 840dp Tablets landscape Two/three column, nav drawer
 
-Phone Layout (Compact — single column)
+Folder Structure
+res/layout/ Default — phones portrait (Compact) res/layout-w600dp/ Tablet portrait and large phones (Medium) res/layout-w840dp/ Tablet landscape (Expanded) res/layout-land/ Phone landscape override res/layout-w600dp-land/ Tablet landscape when different from w840dp
+
+Phone Layout (single column)
 <!-- res/layout/fragment_[name].xml -->
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
@@ -751,12 +541,10 @@ Phone Layout (Compact — single column)
     <!-- Single column content -->
 </androidx.constraintlayout.widget.ConstraintLayout>
 
-Tablet Layout (Medium/Expanded — two column)
-<!-- res/layout-w600dp/fragment_[name].xml -->
+Tablet Layout (two column, res/layout-w600dp/fragment_[name].xml)
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <!-- Left panel -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/panelLeft"
         android:layout_width="0dp"
@@ -773,7 +561,6 @@ Tablet Layout (Medium/Expanded — two column)
         android:layout_height="match_parent"
         app:layout_constraintStart_toEndOf="@id/panelLeft"
         app:layout_constraintEnd_toStartOf="@id/panelRight" />
-    <!-- Right panel -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/panelRight"
         android:layout_width="0dp"
@@ -785,39 +572,10 @@ Tablet Layout (Medium/Expanded — two column)
     </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
 
-Landscape Phone Layout
-<!-- res/layout-land/fragment_[name].xml -->
-<!-- Use horizontal ScrollView root or split the layout into two panes -->
-<!-- Never let content overflow outside the screen in landscape -->
-<androidx.core.widget.NestedScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingHorizontal="@dimen/screen_margin_horizontal">
-        <!-- Left content (40%) -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.4"
-            android:orientation="vertical" />
-        <!-- Right content (60%) -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.6"
-            android:orientation="vertical"
-            android:layout_marginStart="@dimen/spacing_16" />
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
-
-Theme & Style System
-Theme Definition (res/values/themes.xml)
+Theme and Style System
+Base Theme (res/values/themes.xml)
 <resources>
     <style name="Theme.App" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Color scheme (generated by Material Theme Builder) -->
         <item name="colorPrimary">@color/md_theme_primary</item>
         <item name="colorOnPrimary">@color/md_theme_on_primary</item>
         <item name="colorPrimaryContainer">@color/md_theme_primary_container</item>
@@ -842,10 +600,8 @@ Theme Definition (res/values/themes.xml)
         <item name="colorOutlineVariant">@color/md_theme_outline_variant</item>
         <item name="android:colorBackground">@color/md_theme_background</item>
         <item name="colorOnBackground">@color/md_theme_on_background</item>
-        <!-- Window -->
         <item name="android:windowSoftInputMode">adjustResize</item>
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
-        <!-- Edge-to-edge (required for Android 15+) -->
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
@@ -854,88 +610,106 @@ Theme Definition (res/values/themes.xml)
 Dark Theme (res/values-night/themes.xml)
 <resources>
     <style name="Theme.App" parent="Theme.Material3.Dark.NoActionBar">
-        <!-- Dark variant color tokens — generated by Material Theme Builder -->
         <item name="colorPrimary">@color/md_theme_dark_primary</item>
-        <!-- ... all dark variants -->
+        <!-- All dark variant tokens generated by Material Theme Builder -->
     </style>
 </resources>
 
 Accessibility Standards
-Every layout must satisfy these requirements. These are not optional.
+Every layout must satisfy every rule below. These are not optional.
 
-Mandatory Rules
-✓  Every ImageView that conveys information must have android:contentDescription
-✓  Every ImageView that is decorative must have android:contentDescription="@null"
-✓  Every clickable view must have android:contentDescription (if no visible text)
-✓  android:clickable="true" and android:focusable="true" must appear together
-✓  Minimum touch target: 48dp × 48dp (use android:minWidth / android:minHeight)
-✓  Text contrast ratio: minimum 4.5:1 for normal text, 3:1 for large text (≥18sp or ≥14sp bold)
-✓  Group related elements with android:contentDescription on the container, and
-   android:importantForAccessibility="no" on children
-✓  Focusable elements appear in logical reading order (top→bottom, start→end)
-✓  Use android:labelFor to link TextInputLayout labels to EditTexts
-✓  Use android:hint on all text inputs — it becomes the TalkBack label
-✓  Use android:nextFocusDown / nextFocusForward for keyboard/D-pad navigation
-✓  All font sizes in sp (never dp for text)
-✓  Layouts must not clip content at 200% font scale — use scrollable containers
+Every ImageView that conveys meaning must have android:contentDescription set to a descriptive string resource.
 
-Content Description Templates
-<!-- Interactive element with visible text — no separate contentDescription needed -->
-<com.google.android.material.button.MaterialButton
-    android:text="@string/action_save"    <!-- TalkBack reads this automatically -->
-    ... />
-<!-- Icon-only button — contentDescription required -->
-<ImageButton
-    android:src="@drawable/ic_share_24"
-    android:contentDescription="@string/cd_share_recording"
-    android:minWidth="@dimen/touch_target_min"
-    android:minHeight="@dimen/touch_target_min"
-    ... />
-<!-- Decorative image — suppress from TalkBack -->
-<ImageView
-    android:src="@drawable/illustration_empty"
-    android:contentDescription="@null"
-    android:importantForAccessibility="no"
-    ... />
-<!-- Grouped content — describe the container, suppress children -->
-<LinearLayout
-    android:contentDescription="@string/cd_recording_item_[title]_[duration]"
-    android:clickable="true"
-    android:focusable="true">
-    <TextView android:importantForAccessibility="no" ... />
-    <TextView android:importantForAccessibility="no" ... />
-</LinearLayout>
+Every ImageView that is purely decorative must have: android:contentDescription="@null" android:importantForAccessibility="no"
 
-Touch Target Padding (for small icons that must stay visually small)
-<!-- Visual size: 24dp icon. Tap area: 48dp minimum -->
-<ImageView
-    android:layout_width="24dp"
-    android:layout_height="24dp"
-    android:padding="12dp"    <!-- adds 12dp on each side → 48dp tap target -->
-    android:background="?attr/selectableItemBackgroundBorderless"
-    ... />
+Every icon-only button must have a contentDescription. The label must describe the action, not the icon (write "Share recording" not "Share icon").
 
-RTL (Right-to-Left) Support
-✓  Always use Start/End instead of Left/Right:
-     android:layout_marginStart   not android:layout_marginLeft
-     android:paddingStart         not android:paddingLeft
-     app:layout_constraintStart   not app:layout_constraintLeft
-     android:layout_gravity="start" not "left"
-✓  Drawables that need mirroring: android:autoMirrored="true"
-✓  No absolute positions (no translationX without RTL logic)
-✓  Test every screen with developer options → Force RTL layout direction
+Minimum touch target is 48dp by 48dp. Use android:minWidth and android:minHeight, or add padding to small icons to reach 48dp: A 24dp icon with 12dp padding on all sides achieves a 48dp tap area.
+
+Use android:clickable="true" and android:focusable="true" together whenever making a non-button view interactive.
+
+All text sizes must be in sp, never dp.
+
+Layouts must not clip content at 200% font scale. Use scrollable containers for screens with dense content.
+
+All directional attributes must use Start and End, never Left and Right: android:layout_marginStart not android:layout_marginLeft android:paddingEnd not android:paddingRight android:layout_gravity="start" not "left"
+
+Text contrast ratio minimum: 4.5:1 for body text, 3:1 for text 18sp or larger.
+
+Focusable elements must appear in logical reading order: top to bottom, start to end.
+
+Use android:labelFor to link a label TextView to its EditText.
+
+Use android:hint on all text inputs — it becomes the TalkBack label.
+
+Group related content using a container with contentDescription and mark children with android:importantForAccessibility="no" to avoid redundant announcements.
+
+Test every screen with developer options Force RTL layout direction enabled.
+
+Drawable Standards
+All icons must be VectorDrawable. Never use PNG for icons.
+
+Icon naming convention: ic_[semantic_name]_[size]dp.xml Examples: ic_add_24.xml, ic_delete_24.xml, ic_share_24.xml
+
+Apply tint via android:tint or app:tint on the ImageView using a ?attr/ color token. Never modify the fillColor inside the vector file with a hardcoded color.
+
+Directional icons (back arrow, chevron) must have android:autoMirrored="true" so they flip automatically in RTL layouts.
+
+Use app:srcCompat (not android:src) when loading VectorDrawable via AppCompat.
+
+Shape drawable (rounded rectangle):
+
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="?attr/colorSurfaceVariant" />
+    <corners android:radius="@dimen/radius_large" />
+</shape>
+
+Outlined shape:
+
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@android:color/transparent" />
+    <stroke android:width="1dp" android:color="?attr/colorOutline" />
+    <corners android:radius="@dimen/radius_large" />
+</shape>
+
+Circle shape:
+
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="?attr/colorPrimaryContainer" />
+</shape>
+
+File and ID Naming Conventions
+Layout files:
+
+Screens (Activity or Fragment) fragment_[feature_name].xml / activity_[name].xml RecyclerView items item_[entity_name].xml Dialog layouts dialog_[name].xml Bottom sheet layouts bottom_sheet_[name].xml Custom view layouts view_[component_name].xml Reusable partial layouts layout_[component_name].xml Skeleton loaders skeleton_[entity_name].xml
+
+Drawable files:
+
+Icons ic_[name][size]dp.xml ic_record_24.xml Backgrounds bg[description].xml bg_card_selected.xml Shapes shape_[description].xml shape_pill.xml Selectors selector_[element].xml selector_button_bg.xml
+
+View IDs inside XML files:
+
+TextView tv[PascalName] tvTitle, tvSubtitle, tvErrorMessage ImageView iv[PascalName] ivAvatar, ivIcon, ivBanner MaterialButton btn[PascalName] btnSubmit, btnCancel, btnRetry TextInputEditText et[PascalName] etEmail, etPassword TextInputLayout til[PascalName] tilEmail, tilPassword RecyclerView rv[PascalName] rvRecordings, rvSearch ConstraintLayout layout[PascalName] layoutContent, layoutEmpty, layoutError LinearLayout layout[PascalName] layoutActions, layoutHeader MaterialCardView card[PascalName] cardRecording, cardProfile FAB fab[PascalName] fabAdd, fabRecord MaterialToolbar toolbar AppBarLayout appBarLayout NestedScrollView scrollView ViewStub stub[PascalName] stubError, stubEmpty
 
 Performance Rules
-✓  Maximum view hierarchy depth: 5 levels
-✓  Use ConstraintLayout to flatten hierarchies — replace nested LinearLayouts
-✓  Use <include> for repeated layout sections (headers, footers, states)
-✓  Use <merge> as root of included layouts to eliminate one level of nesting
-✓  Use ViewStub for layouts that are rarely shown (error states, onboarding overlays)
-✓  Use app:srcCompat for VectorDrawable in ImageView (not android:src for vectors)
-✓  RecyclerView items must have fixed size where possible (setHasFixedSize = true)
-✓  Never use wrap_content on RecyclerView height — always match_parent or fixed dp
+Maximum view hierarchy depth is 5 levels. Flatten deeper structures with ConstraintLayout.
 
-ViewStub for rarely-shown states:
+Use ConstraintLayout to eliminate nested LinearLayouts. Every nesting level adds an extra measure and layout pass.
+
+Use include for repeated layout sections such as headers, footers, and state views.
+
+Use merge as the root of included layouts to eliminate one wrapper view level:
+
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    tools:parentTag="LinearLayout">
+    <!-- content -->
+</merge>
+
+Use ViewStub for layouts that are rarely shown — error states, empty states, onboarding overlays. The layout is not inflated until stub.inflate() is called:
 
 <ViewStub
     android:id="@+id/stubError"
@@ -944,161 +718,165 @@ ViewStub for rarely-shown states:
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
 
-Merge tag for included layouts:
+Never use android:layout_weight inside a LinearLayout that is itself inside a ScrollView. This creates an infinite height conflict.
 
-<!-- res/layout/layout_loading_state.xml -->
-<merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:parentTag="LinearLayout">
-    <!-- Content inside merge — no extra wrapper View created on include -->
-</merge>
+Never set match_parent height on a RecyclerView inside a ScrollView. The RecyclerView cannot measure its items and cannot recycle views. Use NestedScrollView with app:layout_behavior instead, or give the RecyclerView a fixed height.
 
-Drawable Standards
-Icon Usage
-✓  All icons: VectorDrawable (@drawable/ic_[name]_[size].xml)
-✓  Icon naming: ic_[semantic_name]_[size]dp.xml
-     Examples: ic_add_24.xml, ic_delete_24.xml, ic_share_24.xml
-✓  Use material.io/icons or the Google Fonts Material Symbols library
-✓  Never embed bitmap icons — always vector
-✓  Icon tint via app:tint="?attr/colorOnSurface" — never hardcoded color in vector
-✓  Use android:tint on ImageView rather than modifying the drawable's fillColor
-
-Shape Drawables
-<!-- Rounded rectangle background -->
-<?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="?attr/colorSurfaceVariant" />
-    <corners android:radius="@dimen/radius_large" />
-</shape>
-<!-- Outlined container -->
-<?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@android:color/transparent" />
-    <stroke android:width="1dp" android:color="?attr/colorOutline" />
-    <corners android:radius="@dimen/radius_large" />
-</shape>
-<!-- Circle -->
-<?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="oval">
-    <solid android:color="?attr/colorPrimaryContainer" />
-</shape>
-
-State List Drawables (for interactive elements)
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_pressed="true">
-        <shape>
-            <solid android:color="?attr/colorPrimaryContainer" />
-            <corners android:radius="@dimen/radius_medium" />
-        </shape>
-    </item>
-    <item android:state_focused="true">
-        <shape>
-            <solid android:color="?attr/colorSecondaryContainer" />
-            <corners android:radius="@dimen/radius_medium" />
-        </shape>
-    </item>
-    <item>
-        <shape>
-            <solid android:color="?attr/colorSurface" />
-            <corners android:radius="@dimen/radius_medium" />
-        </shape>
-    </item>
-</selector>
-
-File Naming Conventions
-Layout Files
-Screens (Activity/Fragment):    fragment_[feature_name].xml
-                                activity_[name].xml
-RecyclerView items:             item_[entity_name].xml
-Dialog layouts:                 dialog_[name].xml
-Bottom sheet layouts:           bottom_sheet_[name].xml
-Custom view layouts:            view_[component_name].xml
-Reusable partials:              layout_[component_name].xml
-Skeleton loaders:               skeleton_[entity_name].xml
-
-Drawable Files
-Icons:           ic_[name]_[size]dp.xml         e.g. ic_record_24.xml
-Backgrounds:     bg_[description].xml            e.g. bg_card_selected.xml
-Shapes:          shape_[description].xml         e.g. shape_pill.xml
-Selectors:       selector_[element].xml          e.g. selector_button_bg.xml
-Layers:          layer_[description].xml
-State lists:     state_[element].xml
-
-Resource IDs (inside XML)
-Views:           [viewType][PascalName]
-  TextView:      tvTitle, tvSubtitle, tvErrorMessage
-  ImageView:     ivAvatar, ivIcon, ivBanner
-  Button:        btnSubmit, btnCancel, btnRetry
-  EditText:      etEmail, etPassword
-  TextInputLayout: tilEmail, tilPassword
-  RecyclerView:  rvRecordings, rvSearch
-  ConstraintLayout: layoutContent, layoutEmpty, layoutError
-  LinearLayout:  layoutActions, layoutHeader
-  CardView:      cardRecording, cardProfile
-  FAB:           fabAdd, fabRecord
-  Toolbar:       toolbar
-  AppBarLayout:  appBarLayout
-  NestedScrollView: scrollView
-  ViewStub:      stubError, stubEmpty
+RecyclerView items should have a fixed size where possible so the adapter can be configured with setHasFixedSize(true).
 
 Layout Quality Checklist
-Run before marking any layout complete. Every box must be checked.
+Run this checklist before marking any layout complete. Every item must be confirmed.
 
-Structure
- Root layout uses CoordinatorLayout (for screens with toolbar) or ConstraintLayout
- View hierarchy depth ≤ 5 levels
- No nested LinearLayouts where ConstraintLayout eliminates them
- No android:layout_weight in LinearLayout inside ScrollView
-Resources
- Zero hardcoded dimension values — all reference @dimen/
- Zero hardcoded color values — all reference ?attr/ or @color/ tokens
- Zero hardcoded strings — all reference @string/
- Zero hardcoded text sizes — all reference ?attr/textAppearance*
-Material Design 3
- All interactive components use Material 3 widget classes (not plain Android widgets)
- Buttons use correct style variant (filled / outlined / text) for action priority
- Cards use MaterialCardView (not FrameLayout / CardView from androidx.cardview)
- Text inputs use TextInputLayout + TextInputEditText
-States
- Loading state layout defined (shimmer or progress indicator)
- Empty state layout defined (illustration + message + action)
- Error state layout defined (message + retry button)
- Success state layout defined (primary content)
-Responsiveness
- Layout tested at 360dp width (small phone)
- Layout tested at 411dp width (standard phone)
- Landscape variant exists or tested to not break
- Tablet variant exists for content screens (w600dp alternative)
-Accessibility
- Every ImageView has contentDescription (or @null for decorative)
- All touch targets ≥ 48dp × 48dp
- All text uses sp units
- All layout_margin* and padding* use Start/End (not Left/Right)
- Contrast ratios meet 4.5:1 for body text (verify with accessibility scanner)
- Focus order is logical (top→bottom, start→end)
-Dark Mode
- All colors use ?attr/ theme attributes
- No @color/white or @color/black for semantic elements
- Verified in both Light and Dark themes
-RTL
- All directional attributes use Start/End
- Directional icons marked android:autoMirrored="true" where appropriate
+Structure:
+
+Root layout is CoordinatorLayout (screens with toolbar) or ConstraintLayout
+View hierarchy depth is 5 levels or fewer
+No nested LinearLayouts where ConstraintLayout would flatten them
+No android:layout_weight inside a LinearLayout inside any ScrollView variant
+Resources:
+
+Zero hardcoded dimension values — all reference @dimen/ tokens
+Zero hardcoded color values — all reference ?attr/ or @color/ theme tokens
+Zero hardcoded user-facing strings — all reference @string/ resources
+Zero hardcoded text sizes — all reference ?attr/textAppearance* tokens
+Material Design 3:
+
+All interactive components use M3 widget classes, not plain Android widgets
+Buttons use the correct style variant (filled / outlined / text) for action priority
+Cards use MaterialCardView, not CardView from androidx.cardview or FrameLayout
+Text inputs use TextInputLayout paired with TextInputEditText
+States:
+
+Loading state layout exists (shimmer or progress)
+Empty state layout exists (illustration, message, and action)
+Error state layout exists (message and retry button)
+Success state layout exists (primary content)
+Responsiveness:
+
+Layout tested at 360dp width (small phone)
+Layout tested at 411dp width (standard phone)
+Landscape variant exists or confirmed to not break
+Tablet variant exists for content screens (layout-w600dp/)
+Accessibility:
+
+Every ImageView has contentDescription set or explicitly set to @null
+All touch targets are 48dp by 48dp minimum
+All text uses sp units
+All directional attributes use Start and End, not Left and Right
+Contrast ratios meet 4.5:1 for body text
+Focus order is logical (top to bottom, start to end)
+Dark mode:
+
+All colors use ?attr/ theme attributes
+No @color/white, @color/black, or hex colors for semantic elements
+Verified in both Light and Dark themes
+RTL:
+
+All directional attributes use Start and End
+Directional icons have android:autoMirrored="true"
 Anti-Patterns Reference
-Anti-Pattern	Why It Fails	Correct Approach
-android:textSize="16sp"	Bypasses type scale, not globally changeable	android:textAppearance="?attr/textAppearanceBodyLarge"
-android:textColor="#000000"	Breaks dark mode, not themeable	android:textColor="?attr/colorOnSurface"
-android:background="@color/white"	Breaks dark mode	android:background="?attr/colorSurface"
-Nested LinearLayouts 3+ deep	Exponential measure passes, slow rendering	ConstraintLayout with direct constraints
-android:layout_weight inside ScrollView	Infinite height conflict, layout broken	Fixed dimensions or ConstraintLayout
-match_parent height on RecyclerView inside ScrollView	RecyclerView cannot recycle, OOM	Use NestedScrollView + app:layout_behavior or fixed height
-android:layout_marginLeft	Breaks RTL layouts	android:layout_marginStart
-android:onClick="handleClick" in XML	Requires specific method name in host, untestable	Set listener in Fragment/Activity code
-Missing loading/empty/error states	Blank screen confuses users	All four states defined in every screen layout
-Icon as android:src PNG bitmap	Blurry on high-DPI, large APK	VectorDrawable with app:srcCompat
-CardView from androidx.cardview	M2 component, no M3 token support	MaterialCardView from Material library
-Plain Button or EditText	No Material theming applied	MaterialButton, TextInputLayout + TextInputEditText
-Hardcoded android:hint="Enter email"	Not localizable	android:hint="@string/hint_email"
-Missing contentDescription on icon buttons	TalkBack announces "unlabeled button"	Always provide meaningful contentDescription
-Touch target below 48dp	Impossible to tap for users with motor difficulties	Enforce 48dp minimum via android:minWidth/Height or padding
+1. Hardcoded text size
+Wrong: android:textSize="16sp"
+
+Why it fails: Bypasses the type scale entirely. Cannot be changed globally. Does not adapt to the app's font configuration or Material You type system.
+
+Correct: android:textAppearance="?attr/textAppearanceBodyLarge"
+
+2. Hardcoded text color
+Wrong: android:textColor="#000000"
+
+Why it fails: Hardcoded black text is invisible on dark backgrounds. Breaks dark mode completely and cannot be themed.
+
+Correct: android:textColor="?attr/colorOnSurface"
+
+3. Hardcoded background color
+Wrong: android:background="@color/white"
+
+Why it fails: White backgrounds break dark mode. Static colors do not adapt to the Material You dynamic color system.
+
+Correct: android:background="?attr/colorSurface"
+
+4. Deeply nested LinearLayouts
+Wrong: LinearLayout inside LinearLayout inside LinearLayout to position one view.
+
+Why it fails: Each nesting level multiplies measure and layout passes. Three levels of LinearLayout can mean 8x the measurement work compared to a flat layout. This causes dropped frames on mid-range devices.
+
+Correct: Use a single ConstraintLayout and constrain the view directly to parent or sibling views. No nesting required.
+
+5. layout_weight inside ScrollView
+Wrong: android:layout_weight used on a child inside a LinearLayout that is inside a ScrollView or NestedScrollView.
+
+Why it fails: ScrollView gives its child unlimited height. LinearLayout with layout_weight measures children against the parent height — which is infinite. The layout breaks or produces incorrect sizes.
+
+Correct: Use fixed dimensions or switch to ConstraintLayout with constrained heights.
+
+6. match_parent height on RecyclerView inside ScrollView
+Wrong: RecyclerView with android:layout_height="match_parent" nested inside a ScrollView.
+
+Why it fails: The RecyclerView cannot determine its height, so it renders all items at once without recycling. This defeats the purpose of RecyclerView and can cause out-of-memory errors on large lists.
+
+Correct: Wrap the RecyclerView in a NestedScrollView and apply app:layout_behavior="@string/appbar_scrolling_view_behavior", or give the RecyclerView a fixed height, or redesign the screen to use the RecyclerView as the root scrollable container.
+
+7. Left and Right directional attributes
+Wrong: android:layout_marginLeft android:layout_marginRight android:paddingLeft android:layout_gravity="left"
+
+Why it fails: Hardcoded left and right directions do not flip in RTL locales. Arabic, Hebrew, and other RTL users see a mirrored layout that does not adapt.
+
+Correct: android:layout_marginStart android:layout_marginEnd android:paddingStart android:layout_gravity="start"
+
+8. android:onClick in XML
+Wrong: android:onClick="handleClick"
+
+Why it fails: This requires a public method with that exact name on the hosting Activity or Fragment. It is impossible to unit test, creates tight coupling between XML and code, and causes a crash if the method is renamed or missing.
+
+Correct: Set the click listener programmatically in Fragment.onViewCreated() or Activity.onCreate() using binding.btnAction.setOnClickListener { }.
+
+9. Missing loading, empty, and error states
+Wrong: A screen layout with only the success/content state defined.
+
+Why it fails: Users see a blank screen during loading, no feedback when a list is empty, and a crash or frozen screen on errors. All four states must exist in the layout from the start.
+
+Correct: Define all four states — Loading, Success, Empty, Error — in the layout. Use visibility toggling or ViewStub to show only the active state.
+
+10. PNG icons via android:src
+Wrong: android:src="@drawable/ic_share.png"
+
+Why it fails: PNG bitmaps are blurry on high-DPI screens unless you provide mdpi, hdpi, xhdpi, xxhdpi, and xxxhdpi variants. This inflates APK size significantly. PNG icons cannot be tinted at runtime.
+
+Correct: Use VectorDrawable (SVG-based) icons via app:srcCompat="@drawable/ic_share_24". They are resolution-independent, tintable, and a single file serves all densities.
+
+11. CardView from androidx.cardview
+Wrong: androidx.cardview.widget.CardView
+
+Why it fails: This is the Material 2 component. It does not support Material 3 color tokens, shape theming, ripple behavior, or stroke. It will not adapt to the app theme.
+
+Correct: com.google.android.material.card.MaterialCardView
+
+12. Plain Button and plain EditText
+Wrong: android.widget.Button android.widget.EditText
+
+Why it fails: These are unstyled Android widgets. They do not apply Material theming, do not support M3 color roles or shape attributes, and produce inconsistent UI across devices and Android versions.
+
+Correct: com.google.android.material.button.MaterialButton com.google.android.material.textfield.TextInputLayout
+
+com.google.android.material.textfield.TextInputEditText
+13. Hardcoded hint text
+Wrong: android:hint="Enter your email address"
+
+Why it fails: Hardcoded strings cannot be translated. The app will show English hint text in every locale, breaking localization for all non-English users.
+
+Correct: android:hint="@string/hint_email"
+
+14. Missing contentDescription on icon buttons
+Wrong: An ImageButton or ImageView used as a button with no contentDescription set.
+
+Why it fails: TalkBack announces the view as "unlabeled button". Users who rely on screen readers cannot discover what the button does. This also fails accessibility audits required for Play Store distribution in many regions.
+
+Correct: Always set android:contentDescription to a string resource that describes the action performed by the button, not the icon itself. Write "Share recording" not "Share icon".
+
+15. Touch target below 48dp
+Wrong: An interactive element with layout_width="24dp" and layout_height="24dp" and no padding.
+
+Why it fails: A 24dp tap area is impossible to hit accurately for users with motor difficulties, users on small screens, or anyone using the app with one hand. This fails WCAG 2.5.5 (Target Size) and Google's own accessibility guidelines.
+
+Correct: Add padding to reach 48dp total: a 24dp icon with android:padding="12dp" achieves a 48dp tap area while keeping the visual icon at 24dp. Alternatively, use android:minWidth="48dp" and android:minHeight="48dp".
