@@ -398,9 +398,3 @@ Security rules testing example:
 
 ---
 
-Add this file to your repository (recommended path: docs/firebase-skill.md or modules/firebase/README.md). If you want, I can:
-- Generate a concrete :firebase module scaffold (Hilt module, wrappers, AuthManager, Firestore helpers).
-- Create sample security rules and emulator tests for a sample feature.
-- Scaffold a feature-level repository demonstrating snapshot->domain mapping, Flow listeners, offline sync, and CI emulator integration.
-
-Which of those would you like next?  
