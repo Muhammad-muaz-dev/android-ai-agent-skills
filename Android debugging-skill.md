@@ -281,11 +281,7 @@ D. Recommended dev tooling
 E. Example small change policy
    - For urgent high-impact fixes: small PRs limited to 1–3 files are acceptable for emergency deploys, but must be followed by full review and expansion of tests within 48 hours.
 
-Contact & Next steps
---------------------
-- Add this file at docs/debugging-skill.md.
-- Integrate available templates into incident management and CI pipelines.
-- Optionally I can scaffold:
+
   - RCA template file and PR checklist workflow.
   - Sample reproducer harness (MockWebServer + unit test) for a given crash.
   - CI job that runs perf/trace reproducers for regression detection.
